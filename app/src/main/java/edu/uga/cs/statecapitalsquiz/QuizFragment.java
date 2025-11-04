@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * Fragment displays quiz questions
+ */
 public class QuizFragment extends Fragment {
 
     private static final String ARG_QUIZ_ID = "quiz_id";
@@ -40,9 +43,12 @@ public class QuizFragment extends Fragment {
     private long quizQuestionId;
     private String correctAnswer;
     private float xDown = 0f;
-    private static final int SWIPE_THRESHOLD = 150; // pixels
+    private static final int SWIPE_THRESHOLD = 150;
 
 
+    /**
+     * Creates a new instance of fragment
+     */
     public static QuizFragment newInstance(long quizId, int position) {
         QuizFragment f = new QuizFragment();
         Bundle b = new Bundle();
@@ -52,6 +58,9 @@ public class QuizFragment extends Fragment {
         return f;
     }
 
+    /**
+     * Attaches fragment to context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -60,6 +69,9 @@ public class QuizFragment extends Fragment {
         }
     }
 
+    /**
+     * Creates view for quiz fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -80,7 +92,6 @@ public class QuizFragment extends Fragment {
 
         loadQuestion();
 
-        // swipe detector
         root.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -101,6 +112,9 @@ public class QuizFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Loads quiz question data
+     */
     private void loadQuestion() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(
@@ -136,11 +150,12 @@ public class QuizFragment extends Fragment {
         c.close();
     }
 
+    /**
+     * Handles left swipe
+     */
     private void onSwipeLeft() {
         int checkedId = choicesGroup.getCheckedRadioButtonId();
         if (checkedId == -1) {
-            // optional: show a toast
-            // Toast.makeText(getContext(), "Pick an answer first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -165,20 +180,25 @@ public class QuizFragment extends Fragment {
         }
     }
 
+    /**
+     * Saves the users answer to db
+     */
     private void saveAnswer(String userAnswer, boolean isCorrect) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        // update quiz_questions
         android.content.ContentValues v = new android.content.ContentValues();
         v.put("user_answer", userAnswer);
         v.put("is_correct", isCorrect ? 1 : 0);
         db.update("quiz_questions", v, "id = ?", new String[]{ String.valueOf(quizQuestionId) });
 
-        // update quiz
         String incScore = isCorrect ? ", score = score + 1" : "";
         db.execSQL("UPDATE quizzes SET answered_questions = answered_questions + 1"
                 + incScore + " WHERE id = " + quizId);
     }
+
+    /**
+     * Pauses fragment and saves state
+     */
     @Override
     public void onPause() {
         super.onPause();

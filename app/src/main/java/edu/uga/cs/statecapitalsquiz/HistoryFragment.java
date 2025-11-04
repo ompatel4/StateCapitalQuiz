@@ -16,6 +16,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment displays quiz history
+ */
 public class HistoryFragment extends Fragment implements LoadHistoryTask.Listener {
 
     private StatesDbHelper dbHelper;
@@ -24,9 +27,11 @@ public class HistoryFragment extends Fragment implements LoadHistoryTask.Listene
     private TextView emptyView;
 
     public HistoryFragment() {
-        // required
     }
 
+    /**
+     * Creates view for the history fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -35,6 +40,9 @@ public class HistoryFragment extends Fragment implements LoadHistoryTask.Listene
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
+    /**
+     * Sets up view
+     */
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
@@ -53,17 +61,18 @@ public class HistoryFragment extends Fragment implements LoadHistoryTask.Listene
         listView.setAdapter(adapter);
         listView.setEmptyView(emptyView);
 
-        // 👉 load history in background now
         new LoadHistoryTask(dbHelper, this).execute();
     }
 
+    /**
+     * Callback when history loads
+     */
     @Override
     public void onHistoryLoaded(List<String> newItems) {
         items.clear();
         items.addAll(newItems);
         adapter.notifyDataSetChanged();
 
-        // show/hide empty text
         if (items.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
         } else {

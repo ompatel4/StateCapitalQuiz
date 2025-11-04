@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * Database helper manages state capitals database
+ */
 public class StatesDbHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "state_capitals.db";
@@ -15,6 +18,9 @@ public class StatesDbHelper extends SQLiteOpenHelper {
         this.context = context;
     }
 
+    /**
+     * Create the database tables
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE states (" +

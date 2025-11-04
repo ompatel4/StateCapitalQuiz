@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * AsyncTask creates new quiz
+ */
 public class CreateQuizTask extends AsyncTask<Void, Void, Long> {
 
     public interface Listener {
@@ -27,11 +30,13 @@ public class CreateQuizTask extends AsyncTask<Void, Void, Long> {
         this.listener = (context instanceof Listener) ? (Listener) context : null;
     }
 
+    /**
+     * creates quiz in background
+     */
     @Override
     protected Long doInBackground(Void... voids) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        // 1. select 6 random states
         Cursor c = db.rawQuery(
                 "SELECT id FROM states ORDER BY RANDOM() LIMIT 6",
                 null
@@ -42,7 +47,6 @@ public class CreateQuizTask extends AsyncTask<Void, Void, Long> {
         }
         c.close();
 
-        // 2. create quiz
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
                 .format(new Date());
 
@@ -53,7 +57,6 @@ public class CreateQuizTask extends AsyncTask<Void, Void, Long> {
         qv.put("score", 0);
         long quizId = db.insert("quizzes", null, qv);
 
-        // 3. create quiz_questions
         for (int i = 0; i < stateIds.size(); i++) {
             ContentValues v = new ContentValues();
             v.put("quiz_id", quizId);
@@ -65,6 +68,9 @@ public class CreateQuizTask extends AsyncTask<Void, Void, Long> {
         return quizId;
     }
 
+    /**
+     * Callback after quiz is created
+     */
     @Override
     protected void onPostExecute(Long quizId) {
         if (listener != null) {

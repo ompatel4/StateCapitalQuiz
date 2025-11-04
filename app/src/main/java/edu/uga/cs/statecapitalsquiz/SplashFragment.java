@@ -11,12 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+/**
+ * Fragment for splash screen
+ */
 public class SplashFragment extends Fragment {
 
     public SplashFragment() {
-        // Required empty public constructor
     }
 
+    /**
+     * Creates view for splash fragment.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -27,7 +32,6 @@ public class SplashFragment extends Fragment {
         Button viewHistoryBtn = root.findViewById(R.id.button_view_history);
 
         startQuizBtn.setOnClickListener(v -> {
-            // ask activity to create a quiz
             if (getActivity() instanceof QuizHost) {
                 ((QuizHost) getActivity()).createNewQuiz();
             }
@@ -42,6 +46,9 @@ public class SplashFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Interface for quiz host
+     */
     public interface QuizHost {
         void createNewQuiz();
         void showHistory();

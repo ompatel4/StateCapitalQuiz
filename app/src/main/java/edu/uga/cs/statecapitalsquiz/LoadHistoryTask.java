@@ -7,8 +7,14 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AsyncTask loads quiz history
+ */
 public class LoadHistoryTask extends AsyncTask<Void, Void, List<String>> {
 
+    /**
+     * Listener interface for history callback
+     */
     public interface Listener {
         void onHistoryLoaded(List<String> items);
     }
@@ -21,6 +27,9 @@ public class LoadHistoryTask extends AsyncTask<Void, Void, List<String>> {
         this.listener = listener;
     }
 
+    /**
+     * Loads history in background
+     */
     @Override
     protected List<String> doInBackground(Void... voids) {
         List<String> results = new ArrayList<>();
@@ -39,7 +48,6 @@ public class LoadHistoryTask extends AsyncTask<Void, Void, List<String>> {
             int score = c.getInt(2);
             int total = c.getInt(3);
 
-            // fallback if finished_at is null (shouldn't be, but just in case)
             String line = (finished != null ? finished : "Unknown time")
                     + "  —  Score: " + score + "/" + total;
             results.add(line);
@@ -49,6 +57,9 @@ public class LoadHistoryTask extends AsyncTask<Void, Void, List<String>> {
         return results;
     }
 
+    /**
+     * Callback after history loads
+     */
     @Override
     protected void onPostExecute(List<String> items) {
         if (listener != null) {

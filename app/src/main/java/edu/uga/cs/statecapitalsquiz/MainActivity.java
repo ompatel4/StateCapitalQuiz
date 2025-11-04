@@ -7,6 +7,9 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Main activity
+ */
 public class MainActivity extends AppCompatActivity
         implements LoadStatesTask.Listener,
         SplashFragment.QuizHost,
@@ -14,28 +17,30 @@ public class MainActivity extends AppCompatActivity
 
     private StatesDbHelper dbHelper;
 
+    /**
+     * Creates activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);   // must have fragment_container
+        setContentView(R.layout.activity_main);
 
         dbHelper = new StatesDbHelper(this);
 
-        // load CSV → DB in background
         new LoadStatesTask(this, dbHelper, this).execute();
     }
 
+    /**
+     * Callback when states load
+     */
     @Override
     public void onStatesLoaded() {
-        // after DB is ready, see if there was a quiz in progress
         SharedPreferences prefs = getSharedPreferences("quiz_state", MODE_PRIVATE);
         long savedQuizId = prefs.getLong("current_quiz_id", -1L);
         int savedPos = prefs.getInt("current_position", -1);
 
         if (savedQuizId != -1L && savedPos != -1) {
-            // check if that quiz is actually unfinished in DB
             if (isQuizUnfinished(savedQuizId)) {
-                // resume quiz
                 QuizFragment frag = QuizFragment.newInstance(savedQuizId, savedPos);
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -43,34 +48,35 @@ public class MainActivity extends AppCompatActivity
                         .commit();
                 return;
             } else {
-                // finished already → clear it
                 clearSavedQuizState();
             }
         }
 
-        // otherwise show home
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new SplashFragment())
                 .commit();
     }
 
+    /**
+     * Creates new quiz
+     */
     @Override
     public void createNewQuiz() {
-        // user clicked "Start New Quiz" on splash
         new CreateQuizTask(this, dbHelper).execute();
     }
 
+    /**
+     * Callback after quiz creation
+     */
     @Override
     public void onQuizCreated(long quizId) {
-        // remember this quiz as current (pos = 0)
         getSharedPreferences("quiz_state", MODE_PRIVATE)
                 .edit()
                 .putLong("current_quiz_id", quizId)
                 .putInt("current_position", 0)
                 .apply();
 
-        // open first question
         QuizFragment frag = QuizFragment.newInstance(quizId, 0);
         getSupportFragmentManager()
                 .beginTransaction()
@@ -79,6 +85,9 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
+    /**
+     * Shows quiz history
+     */
     @Override
     public void showHistory() {
         getSupportFragmentManager()
@@ -88,12 +97,16 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
-    // --- helpers ---
-
+    /**
+     * Calls db helper
+     */
     public StatesDbHelper getDbHelper() {
         return dbHelper;
     }
 
+    /**
+     * Checks if quiz is unfinished
+     */
     private boolean isQuizUnfinished(long quizId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(
@@ -111,6 +124,9 @@ public class MainActivity extends AppCompatActivity
         return unfinished;
     }
 
+    /**
+     * Clears saved quiz state
+     */
     private void clearSavedQuizState() {
         getSharedPreferences("quiz_state", MODE_PRIVATE)
                 .edit()

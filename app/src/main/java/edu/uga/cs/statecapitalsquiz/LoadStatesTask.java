@@ -31,7 +31,6 @@ public class LoadStatesTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        // check if already loaded
         Cursor c = db.rawQuery("SELECT COUNT(*) FROM states", null);
         int count = 0;
         if (c.moveToFirst()) {
@@ -51,12 +50,12 @@ public class LoadStatesTask extends AsyncTask<Void, Void, Void> {
             db.beginTransaction();
             while ((line = reader.readLine()) != null) {
                 if (first) {
-                    first = false; // skip header
+                    first = false;
                     continue;
                 }
                 String[] parts = line.split(",");
                 if (parts.length < 4) {
-                    continue; // skip bad rows
+                    continue;
                 }
                 String state = parts[0].trim();
                 String capital = parts[1].trim();
