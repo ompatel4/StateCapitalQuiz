@@ -11,8 +11,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * AsyncTask loads states from CSV
+ */
 public class LoadStatesTask extends AsyncTask<Void, Void, Void> {
 
+    /**
+     * Listener for states loaded callback
+     */
     public interface Listener {
         void onStatesLoaded();
     }
@@ -27,6 +33,9 @@ public class LoadStatesTask extends AsyncTask<Void, Void, Void> {
         this.listener = listener;
     }
 
+    /**
+     * Loads states in the background
+     */
     @Override
     protected Void doInBackground(Void... voids) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -79,6 +88,9 @@ public class LoadStatesTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    /**
+     * Callback after states load
+     */
     @Override
     protected void onPostExecute(Void aVoid) {
         if (listener != null) {
